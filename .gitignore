@@ -1,0 +1,11 @@
+firebase-debug.log
+*.log
+.firebase/
+deploy/.env.production
+deploy/firebase-service-account.json
+deploy/ssl/
+deploy/*.tar.gz
+*.tar.gz
+node_modules/
+dist/
+.env

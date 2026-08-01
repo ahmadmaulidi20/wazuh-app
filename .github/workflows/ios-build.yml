@@ -1,0 +1,85 @@
+name: iOS Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  analyze-test:
+    name: Analyze & Test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: wazuh_app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: main
+      - name: Install dependencies
+        run: flutter pub get
+      - name: Analyze
+        run: flutter analyze
+      - name: Test
+        run: flutter test
+
+  build-ios:
+    name: Build iOS (simulator)
+    runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: wazuh_app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: main
+      - name: Install CocoaPods
+        run: |
+          sudo gem install cocoapods
+          pod --version
+      - name: Verify GoogleService-Info.plist
+        run: |
+          if grep -q "REPLACE ME" ios/Runner/GoogleService-Info.plist; then
+            echo "::error::GoogleService-Info.plist is still a placeholder. Replace it with the real file from Firebase Console."
+            exit 1
+          fi
+      - name: Install dependencies
+        run: flutter pub get
+      - name: Build iOS (simulator)
+        run: flutter build ios --simulator
+
+  build-ios-archive:
+    name: Build iOS (archive)
+    runs-on: macos-latest
+    if: github.event_name == 'workflow_dispatch'
+    defaults:
+      run:
+        working-directory: wazuh_app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: main
+      - name: Install CocoaPods
+        run: |
+          sudo gem install cocoapods
+          pod --version
+      - name: Verify GoogleService-Info.plist
+        run: |
+          if grep -q "REPLACE ME" ios/Runner/GoogleService-Info.plist; then
+            echo "::error::GoogleService-Info.plist is still a placeholder. Replace it with the real file from Firebase Console."
+            exit 1
+          fi
+      - name: Install dependencies
+        run: flutter pub get
+      - name: Build iOS (archive, no codesign)
+        run: flutter build ios --release --no-codesign
+      - name: Upload .app artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Runner.app
+          path: build/ios/iphoneos/*.app

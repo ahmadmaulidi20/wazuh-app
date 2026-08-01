@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "583233434705",
+    "project_id": "wazuhapp-f04e3",
+    "storage_bucket": "wazuhapp-f04e3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:583233434705:android:f6950a0558353f3882f470",
+        "android_client_info": {
+          "package_name": "com.wazuh.wazuh_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBsXInlSUw0ECZwH672INvMe7t2DQQnve0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

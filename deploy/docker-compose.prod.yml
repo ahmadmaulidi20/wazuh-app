@@ -1,0 +1,49 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: wazuh
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-wazuh123}
+      POSTGRES_DB: wazuh_monitor
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U wazuh"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ../backend
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: "postgresql://wazuh:${POSTGRES_PASSWORD:-wazuh123}@postgres:5432/wazuh_monitor?schema=public"
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-24h}
+      WEBHOOK_API_KEY: ${WEBHOOK_API_KEY}
+      FCM_CREDENTIALS_PATH: /app/firebase-service-account.json
+      CORS_ORIGIN: ${CORS_ORIGIN:-*}
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./firebase-service-account.json:/app/firebase-service-account.json:ro
+
+  nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./ssl:/etc/letsencrypt:ro
+      - ../wazuh_app/build/web:/var/www/wazuh-app:ro
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:

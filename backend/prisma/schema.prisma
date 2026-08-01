@@ -1,0 +1,84 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String        @id @default(uuid())
+  username     String        @unique
+  passwordHash String        @map("password_hash")
+  role         String        @default("admin")
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+
+  deviceTokens DeviceToken[]
+
+  @@map("users")
+}
+
+model Agent {
+  id           String   @id @default(uuid())
+  wazuhAgentId String   @unique @map("wazuh_agent_id")
+  name         String
+  ip           String?
+  status       String   @default("pending")
+  osName       String?  @map("os_name")
+  osVersion    String?  @map("os_version")
+  lastSeen     DateTime? @map("last_seen")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  alerts Alert[]
+
+  @@map("agents")
+}
+
+model Alert {
+  id              String    @id @default(uuid())
+  wazuhAlertId    String?   @unique @map("wazuh_alert_id")
+  ruleId          Int?      @map("rule_id")
+  ruleDescription String?   @map("rule_description")
+  ruleLevel       Int?      @map("rule_level")
+  ruleGroups      String?   @map("rule_groups")
+  sourceIp        String?   @map("source_ip")
+  sourcePort      Int?      @map("source_port")
+  destinationIp   String?   @map("destination_ip")
+  destinationPort Int?      @map("destination_port")
+  protocol        String?
+  agentId         String?   @map("agent_id")
+  agentName       String?   @map("agent_name")
+  location        String?
+  fullLog         String?   @map("full_log")
+  rawData         Json?     @map("raw_data")
+  timestamp       DateTime? @map("timestamp")
+  status          String    @default("new")
+  createdAt       DateTime  @default(now()) @map("created_at")
+
+  agent Agent? @relation(fields: [agentId], references: [wazuhAgentId])
+
+  @@index([ruleLevel])
+  @@index([status])
+  @@index([createdAt])
+  @@index([sourceIp])
+  @@index([agentId])
+  @@index([timestamp])
+  @@map("alerts")
+}
+
+model DeviceToken {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  token     String
+  platform  String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, token])
+  @@map("device_tokens")
+}
