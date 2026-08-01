@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../domain/alert_notifier.dart';
+import '../domain/alert_recommendation_mapper.dart';
 import '../../../shared/widgets/alert_card.dart';
 import '../../../core/utils/date_format.dart';
 
@@ -64,6 +65,7 @@ class _AlertListPageState extends ConsumerState<AlertListPage> {
                         sourceIp: alert.sourceIp,
                         timestamp: formatTime(alert.timestamp),
                         status: alert.status,
+                        attackType: AlertRecommendationMapper.recommend(alert).attackType,
                         onTap: () => context.push('/alerts/${alert.id}'),
                       );
                     },

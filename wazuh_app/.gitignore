@@ -33,6 +33,9 @@ migrate_working_dir/
 /build/
 /coverage/
 
+# Build artifacts
+web.tgz
+
 # Symbolication related
 app.*.symbols
 

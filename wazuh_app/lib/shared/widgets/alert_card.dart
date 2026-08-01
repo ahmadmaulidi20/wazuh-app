@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/theme/app_colors.dart';
 import 'severity_badge.dart';
 
 class AlertCard extends StatelessWidget {
@@ -8,6 +9,7 @@ class AlertCard extends StatelessWidget {
   final String? sourceIp;
   final String? timestamp;
   final String status;
+  final String? attackType;
   final VoidCallback onTap;
 
   const AlertCard({
@@ -18,6 +20,7 @@ class AlertCard extends StatelessWidget {
     this.sourceIp,
     this.timestamp,
     required this.status,
+    this.attackType,
     required this.onTap,
   });
 
@@ -40,6 +43,24 @@ class AlertCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    if (attackType != null) ...[
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          attackType!,
+                          style: const TextStyle(
+                            fontSize: 11,
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                    ],
                     Text(
                       description ?? 'Unknown Alert',
                       style: const TextStyle(fontWeight: FontWeight.w600),

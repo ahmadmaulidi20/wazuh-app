@@ -4,7 +4,10 @@ import '../domain/alert_notifier.dart';
 import '../../../shared/widgets/severity_badge.dart';
 import '../../../shared/widgets/status_badge.dart';
 import '../../../core/models/alert_model.dart';
+import '../../../core/models/alert_recommendation.dart';
+import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/date_format.dart';
+import '../domain/alert_recommendation_mapper.dart';
 
 class AlertDetailPage extends ConsumerStatefulWidget {
   final String alertId;
@@ -58,6 +61,12 @@ class _AlertDetailPageState extends ConsumerState<AlertDetailPage> {
           Text(
             alert.ruleDescription ?? 'Unknown Alert',
             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 16),
+
+          _RecommendationCard(
+            recommendation: AlertRecommendationMapper.recommend(alert),
+            level: alert.ruleLevel,
           ),
           const SizedBox(height: 24),
 
@@ -141,6 +150,76 @@ class _DetailRow extends StatelessWidget {
           ),
           Expanded(
             child: Text(value, style: const TextStyle(fontSize: 14)),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _RecommendationCard extends StatelessWidget {
+  final AlertRecommendation recommendation;
+  final int? level;
+
+  const _RecommendationCard({required this.recommendation, this.level});
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = level != null ? SeverityColors.getColor(level!) : AppColors.primary;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: accent.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: accent.withValues(alpha: 0.35)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.lightbulb_outline, color: accent, size: 20),
+              const SizedBox(width: 8),
+              Text(
+                recommendation.attackType,
+                style: TextStyle(
+                  color: accent,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            recommendation.summary,
+            style: const TextStyle(fontSize: 13.5, height: 1.4),
+          ),
+          const SizedBox(height: 12),
+          const Text(
+            'Rekomendasi tindakan:',
+            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 8),
+          ...recommendation.actions.map(
+            (action) => Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(top: 2),
+                    child: Icon(Icons.check_circle_outline, size: 16, color: Colors.green),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(action, style: const TextStyle(fontSize: 13, height: 1.35)),
+                  ),
+                ],
+              ),
+            ),
           ),
         ],
       ),
