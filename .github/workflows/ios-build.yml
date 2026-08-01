@@ -15,7 +15,7 @@ jobs:
       run:
         working-directory: wazuh_app
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: subosito/flutter-action@v2
         with:
           channel: main
@@ -33,7 +33,7 @@ jobs:
       run:
         working-directory: wazuh_app
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: subosito/flutter-action@v2
         with:
           channel: main
@@ -60,7 +60,7 @@ jobs:
       run:
         working-directory: wazuh_app
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: subosito/flutter-action@v2
         with:
           channel: main
@@ -78,8 +78,14 @@ jobs:
         run: flutter pub get
       - name: Build iOS (archive, no codesign)
         run: flutter build ios --release --no-codesign
-      - name: Upload .app artifact
+      - name: Package unsigned .ipa
+        run: |
+          mkdir -p Payload
+          cp -R build/ios/iphoneos/Runner.app Payload/
+          zip -r wazuh-monitor-unsigned.ipa Payload
+      - name: Upload .ipa artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Runner.app
-          path: build/ios/iphoneos/*.app
+          name: wazuh-monitor-unsigned.ipa
+          path: wazuh_app/wazuh-monitor-unsigned.ipa
+          if-no-files-found: error
