@@ -22,6 +22,11 @@ Future<void> _initNotifications() async {
   );
   const settings = InitializationSettings(android: android, iOS: darwin);
   await notificationsPlugin.initialize(settings: settings);
+
+  await notificationsPlugin
+      .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>()
+      ?.requestNotificationsPermission();
 }
 
 void main() async {
