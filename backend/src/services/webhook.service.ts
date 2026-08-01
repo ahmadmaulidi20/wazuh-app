@@ -3,6 +3,7 @@ import { WazuhAlert } from '../types/wazuh';
 import { AlertService } from './alert.service';
 import { AgentService } from './agent.service';
 import { FcmService } from './fcm.service';
+import { alertHub } from './alert-hub';
 import { Prisma } from '@prisma/client';
 import { logger } from '../utils/logger';
 
@@ -58,6 +59,9 @@ export class WebhookService {
       rawData: JSON.parse(JSON.stringify(payload)),
       timestamp: parseWazuhTimestamp(payload.timestamp),
     });
+
+    // Broadcast alert to real-time clients (WebSocket)
+    alertHub.broadcast({ type: 'alert', data: alert });
 
     // Send FCM notification (only for level >= 7)
     if (payload.rule?.level && payload.rule.level >= 7) {
