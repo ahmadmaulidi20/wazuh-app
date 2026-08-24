@@ -24,6 +24,7 @@ dependencies:
   pull_to_refresh: ^2.0.0
   web_socket_channel: ^3.0.3
   flutter_local_notifications: ^22.2.0
+  web: ^1.1.0
 
 dev_dependencies:
   flutter_test:

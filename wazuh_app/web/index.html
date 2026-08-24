@@ -31,6 +31,16 @@
 
   <title>wazuh_app</title>
   <link rel="manifest" href="manifest.json">
+
+  <!-- Pre-load Firebase JS SDK (modular, versi sama dengan plugin firebase_core_web).
+       Plugin mendeteksi global firebase_core/firebase_messaging sudah ada dan
+       melewati injeksi CDN dinamisnya. -->
+  <script type="module">
+    import * as firebase_core from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+    import * as firebase_messaging from "https://www.gstatic.com/firebasejs/11.9.1/firebase-messaging.js";
+    globalThis.firebase_core = firebase_core;
+    globalThis.firebase_messaging = firebase_messaging;
+  </script>
 </head>
 <body>
   <!--

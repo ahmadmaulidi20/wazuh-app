@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../features/auth/presentation/login_page.dart';
 import '../../features/dashboard/presentation/dashboard_page.dart';
 import '../../features/alerts/presentation/alert_detail_page.dart';
+import '../../features/notifications/presentation/notification_center_page.dart';
 import '../../features/auth/domain/auth_notifier.dart';
 
 class _AuthNotifier extends ChangeNotifier {
@@ -45,6 +46,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/',
         builder: (context, state) => const DashboardPage(),
+      ),
+      GoRoute(
+        path: '/notifications',
+        builder: (context, state) => const NotificationCenterPage(),
       ),
       GoRoute(
         path: '/alerts/:id',

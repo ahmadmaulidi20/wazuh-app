@@ -6,6 +6,7 @@ import '../domain/dashboard_notifier.dart';
 import '../../../core/models/dashboard_data.dart';
 import '../../alerts/presentation/alert_list_page.dart';
 import '../../agents/presentation/agent_list_page.dart';
+import '../../notifications/domain/notification_notifier.dart';
 import '../../../shared/widgets/status_badge.dart';
 import '../../../shared/widgets/live_clock.dart';
 
@@ -65,6 +66,19 @@ class _DashboardViewState extends ConsumerState<_DashboardView> {
       appBar: AppBar(
         title: const Text('Dashboard'),
         actions: [
+          Consumer(
+            builder: (context, ref, _) {
+              final unread = ref.watch(notificationNotifierProvider).unreadCount;
+              return IconButton(
+                icon: Badge(
+                  isLabelVisible: unread > 0,
+                  label: Text('$unread'),
+                  child: const Icon(Icons.notifications),
+                ),
+                onPressed: () => context.push('/notifications'),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () => ref.read(dashboardNotifierProvider.notifier).loadStats(),
