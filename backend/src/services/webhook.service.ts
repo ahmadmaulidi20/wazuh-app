@@ -47,10 +47,10 @@ export class WebhookService {
       ruleDescription: payload.rule?.description?.slice(0, 500),
       ruleLevel: payload.rule?.level,
       ruleGroups: payload.rule?.groups?.join(', '),
-      sourceIp: payload.srcip,
-      sourcePort: payload.srcport,
-      destinationIp: payload.dstip,
-      destinationPort: payload.dstport,
+      sourceIp: payload.srcip ?? (payload.data?.srcip as string) ?? (payload.data?.src_ip as string),
+      sourcePort: payload.srcport ?? (Number(payload.data?.srcport) || undefined),
+      destinationIp: payload.dstip ?? (payload.data?.dstip as string) ?? (payload.data?.dest_ip as string),
+      destinationPort: payload.dstport ?? (Number(payload.data?.dstport) || undefined),
       protocol: payload.protocol,
       agentId: payload.agent?.id,
       agentName: payload.agent?.name,
@@ -68,7 +68,7 @@ export class WebhookService {
       await this.fcmService.sendAlertNotification({
         ruleDescription: payload.rule?.description,
         ruleLevel: payload.rule?.level,
-        sourceIp: payload.srcip,
+        sourceIp: payload.srcip ?? (payload.data?.srcip as string) ?? (payload.data?.src_ip as string),
       });
     }
 
