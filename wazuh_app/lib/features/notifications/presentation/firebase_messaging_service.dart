@@ -1,14 +1,11 @@
-import 'dart:js_interop';
-import 'dart:js_interop_unsafe';
-
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
-import 'package:web/web.dart' as web;
 import '../../../core/network/api_client.dart';
 import '../../../core/constants/api_constants.dart';
 import '../../../core/firebase_options.dart';
 import '../../../core/navigation/app_keys.dart';
+import 'fcm_web_helper.dart';
 import 'web_notification_service.dart';
 
 class FirebaseMessagingService {
@@ -45,59 +42,42 @@ class FirebaseMessagingService {
         FirebaseMessaging.onBackgroundMessage(_backgroundHandler);
       } catch (e, st) {
         final msg = 'FCM listener gagal: $e\n$st';
-        web.console.error(msg.toJS);
+        fcmWebHelper.error(msg);
         _showSnack('⚠️ $msg\n$_buildTag');
       }
     } catch (e, st) {
       final msg = 'FCM init gagal: $e\n$st';
-      web.console.error(msg.toJS);
+      fcmWebHelper.error(msg);
       _showSnack('⚠️ $msg\n$_buildTag');
     }
   }
 
   void _logSdkStatus() {
     try {
-      final globals = web.window as JSObject;
-      final hasCore = globals.getProperty('firebase_core'.toJS) != null;
-      final hasMessaging = globals.getProperty('firebase_messaging'.toJS) != null;
-      web.console.log(
-          'FCM: SDK globals → firebase_core=$hasCore, firebase_messaging=$hasMessaging'
-              .toJS);
+      final hasCore = fcmWebHelper.hasGlobal('firebase_core');
+      final hasMessaging = fcmWebHelper.hasGlobal('firebase_messaging');
+      fcmWebHelper.log(
+          'FCM: SDK globals → firebase_core=$hasCore, firebase_messaging=$hasMessaging');
     } catch (e) {
-      web.console.error('FCM: status SDK gagal dibaca: $e'.toJS);
+      fcmWebHelper.error('FCM: status SDK gagal dibaca: $e');
     }
   }
 
   Future<void> _ensureWebServiceWorker() async {
-    try {
-      final navigator = web.window.navigator;
-      final sw = navigator.serviceWorker;
-      final existing = await sw.getRegistration().toDart;
-      final currentScope = existing?.scope ?? '(belum ada)';
-      web.console.log('FCM: service worker saat ini: $currentScope'.toJS);
-      final hasMessagingSw =
-          existing != null && currentScope.contains('firebase-messaging-sw');
-      if (!hasMessagingSw) {
-        final reg =
-            await sw.register('firebase-messaging-sw.js'.toJS).toDart;
-        web.console.log('FCM: SW terdaftar → scope ${reg.scope}'.toJS);
-      }
-    } catch (e) {
-      web.console.error('FCM: SW register gagal: $e'.toJS);
-    }
+    await fcmWebHelper.ensureServiceWorker();
   }
 
   /// Memastikan izin notifikasi web siap sebelum getToken.
   Future<bool> _ensureWebPermission() async {
     try {
-      web.console.log('FCM: meminta izin notifikasi...'.toJS);
+      fcmWebHelper.log('FCM: meminta izin notifikasi...');
       final settings = await _messaging.requestPermission(
         alert: true,
         badge: true,
         sound: true,
       );
       final status = settings.authorizationStatus;
-      web.console.log('FCM: authorizationStatus = $status'.toJS);
+      fcmWebHelper.log('FCM: authorizationStatus = $status');
 
       if (status == AuthorizationStatus.authorized ||
           status == AuthorizationStatus.provisional) {
@@ -128,7 +108,7 @@ class FirebaseMessagingService {
       return false;
     } catch (e, st) {
       final msg = 'FCM fase izin gagal: $e\n$st';
-      web.console.error(msg.toJS);
+      fcmWebHelper.error(msg);
       _showSnack('⚠️ $msg\n$_buildTag');
       return false;
     }
@@ -169,19 +149,18 @@ class FirebaseMessagingService {
       try {
         if (kIsWeb) {
           await _ensureWebServiceWorker();
-          web.console.log('FCM: getToken percobaan $attempt...'.toJS);
+          fcmWebHelper.log('FCM: getToken percobaan $attempt...');
           final String? token =
               await _messaging.getToken(vapidKey: FirebaseMessagingVapidKey.web);
-          web.console.log(
-              'FCM: token diperoleh (${token?.length ?? 0} chars)'.toJS);
+          fcmWebHelper.log('FCM: token diperoleh (${token?.length ?? 0} chars)');
           if (token != null) return token;
-          web.console.log('FCM: token null, coba lagi.'.toJS);
+          fcmWebHelper.log('FCM: token null, coba lagi.');
         } else {
           return await _messaging.getToken();
         }
       } catch (e, st) {
         final msg = 'FCM getToken percobaan $attempt gagal: $e\n$st';
-        web.console.error(msg.toJS);
+        fcmWebHelper.error(msg);
         _showSnack('⚠️ $msg\n$_buildTag');
       }
       await Future<void>.delayed(const Duration(seconds: 1));
@@ -215,7 +194,7 @@ class FirebaseMessagingService {
         action: SnackBarAction(
           label: 'Muat Ulang',
           onPressed: () {
-            if (kIsWeb) web.window.location.reload();
+            if (kIsWeb) fcmWebHelper.reloadPage();
           },
         ),
       ),
@@ -232,12 +211,12 @@ class FirebaseMessagingService {
         },
       );
       if (kIsWeb) {
-        web.console.log('FCM: token terdaftar (platform web)'.toJS);
+        fcmWebHelper.log('FCM: token terdaftar (platform web)');
       }
     } catch (e, st) {
       if (kIsWeb) {
         final msg = 'FCM register gagal: $e\n$st';
-        web.console.error(msg.toJS);
+        fcmWebHelper.error(msg);
         _showSnack('⚠️ $msg\n$_buildTag');
       } else if (kDebugMode) {
         print('FCM Register error: $e');
