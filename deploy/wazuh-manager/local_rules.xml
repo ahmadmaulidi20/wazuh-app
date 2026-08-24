@@ -1,0 +1,152 @@
+<!-- Local rules -->
+
+<!-- Modify it at your will. -->
+<!-- Copyright (C) 2015, Wazuh Inc. -->
+
+
+<group name="local,syslog,sshd,suricata,pam">
+
+  <!-- Override: sshd brute force (rule 5712) -->
+  <rule id="5712" level="10" frequency="8" timeframe="120" ignore="60" overwrite="yes">
+    <if_matched_sid>5710</if_matched_sid>
+    <same_source_ip />
+    <description>sshd: Serangan brute force SSH - kegagalan autentikasi berulang untuk pengguna yang tidak ada.</description>
+    <mitre>
+      <id>T1110</id>
+    </mitre>
+    <group>authentication_failures,gdpr_IV_35.7.d,gdpr_IV_32.2,hipaa_164.312.b,nist_800_53_SI.4,nist_800_53_AU.14,nist_800_53_AC.7,pci_dss_11.4,pci_dss_10.2.4,pci_dss_10.2.5,tsc_CC6.1,tsc_CC6.8,tsc_CC7.2,tsc_CC7.3,</group>
+  </rule>
+
+  <!-- Override: sshd brute force (rule 5720) -->
+  <rule id="5720" level="10" frequency="8" overwrite="yes">
+    <if_matched_sid>5716</if_matched_sid>
+    <same_source_ip />
+    <description>sshd: Serangan brute force SSH - banyak kegagalan autentikasi dari satu IP sumber.</description>
+    <mitre>
+      <id>T1110</id>
+    </mitre>
+    <group>authentication_failures,gdpr_IV_35.7.d,gdpr_IV_32.2,gpg13_7.1,hipaa_164.312.b,nist_800_53_AU.14,nist_800_53_AC.7,nist_800_53_SI.4,pci_dss_10.2.4,pci_dss_10.2.5,pci_dss_11.4,tsc_CC6.1,tsc_CC6.8,tsc_CC7.2,tsc_CC7.3,</group>
+  </rule>
+
+  <!-- Override: sshd brute force (rule 5763) -->
+  <rule id="5763" level="10" frequency="8" timeframe="120" ignore="60" overwrite="yes">
+    <if_matched_sid>5760</if_matched_sid>
+    <same_source_ip/>
+    <description>sshd: Serangan brute force SSH - banyak kegagalan autentikasi.</description>
+    <mitre>
+      <id>T1110</id>
+    </mitre>
+    <group>authentication_failures,gdpr_IV_35.7.d,gdpr_IV_32.2,hipaa_164.312.b,nist_800_53_SI.4,nist_800_53_AU.14,nist_800_53_AC.7,pci_dss_11.4,pci_dss_10.2.4,pci_dss_10.2.5,tsc_CC6.1,tsc_CC6.8,tsc_CC7.2,tsc_CC7.3,</group>
+  </rule>
+
+  <!-- Override: PAM brute force (rule 5551) -->
+  <rule id="5551" level="10" frequency="8" timeframe="180" overwrite="yes">
+    <if_matched_sid>5503</if_matched_sid>
+    <same_source_ip />
+    <description>PAM: Serangan brute force SSH - banyak login gagal dalam waktu singkat.</description>
+    <mitre>
+      <id>T1110</id>
+    </mitre>
+    <group>authentication_failures,pci_dss_10.2.4,pci_dss_10.2.5,pci_dss_11.4,gpg13_7.8,gdpr_IV_35.7.d,gdpr_IV_32.2,hipaa_164.312.b,nist_800_53_AU.14,nist_800_53_AC.7,nist_800_53_SI.4,tsc_CC6.1,tsc_CC6.8,tsc_CC7.2,tsc_CC7.3,</group>
+  </rule>
+
+  <!-- Suricata Nmap TCP SYN Port Scan Detection -->
+  <rule id="100102" level="10">
+    <if_sid>86601</if_sid>
+    <field name="alert.signature">LOCAL Nmap TCP SYN Port Scan Detected</field>
+    <description>Suricata: Deteksi port scanning Nmap TCP SYN.</description>
+    <group>attack,port_scan,nmap,suricata</group>
+  </rule>
+
+  <!-- Suricata built-in portscan detector -->
+  <rule id="100103" level="10">
+    <if_sid>86600</if_sid>
+    <field name="event_type">^portscan$</field>
+    <description>Suricata: Port scanning terdeteksi oleh modul portscan Suricata.</description>
+    <group>attack,port_scan,suricata</group>
+  </rule>
+
+
+  <!-- Override: agent disconnected (level 7 -> webhook integration) -->
+  <rule id="504" level="7" overwrite="yes">
+    <if_sid>500</if_sid>
+    <match>Agent disconnected</match>
+    <description>Wazuh agent disconnected.</description>
+    <mitre>
+      <id>T1562.001</id>
+    </mitre>
+    <group>pci_dss_10.6.1,pci_dss_10.2.6,gpg13_10.1,gdpr_IV_35.7.d,hipaa_164.312.b,nist_800_53_AU.6,nist_800_53_AU.14,nist_800_53_AU.5,tsc_CC7.2,tsc_CC7.3,tsc_CC6.8,</group>
+  </rule>
+
+</group>
+
+<!-- Whitelist administrator 116.206.33.54: semua alert dari IP ini diabaikan (bukan serangan) -->
+<group name="whitelist_admin,local,syslog,sshd,suricata,pam">
+
+  <rule id="100210" level="0">
+    <if_sid>5710</if_sid>
+    <srcip>116.206.33.54</srcip>
+    <description>SSH: Kegagalan login dari IP administrator (whitelist) - diabaikan.</description>
+  </rule>
+
+  <rule id="100211" level="0">
+    <if_matched_sid>5712</if_matched_sid>
+    <srcip>116.206.33.54</srcip>
+    <description>SSH: Brute force dari IP administrator (whitelist) - diabaikan.</description>
+  </rule>
+
+  <rule id="100212" level="0">
+    <if_sid>5716</if_sid>
+    <srcip>116.206.33.54</srcip>
+    <description>SSH: Kegagalan autentikasi dari IP administrator (whitelist) - diabaikan.</description>
+  </rule>
+
+  <rule id="100213" level="0">
+    <if_matched_sid>5720</if_matched_sid>
+    <srcip>116.206.33.54</srcip>
+    <description>SSH: Multiple kegagalan autentikasi dari IP administrator (whitelist) - diabaikan.</description>
+  </rule>
+
+  <rule id="100214" level="0">
+    <if_sid>5760</if_sid>
+    <srcip>116.206.33.54</srcip>
+    <description>SSH: Authentication failed dari IP administrator (whitelist) - diabaikan.</description>
+  </rule>
+
+  <rule id="100215" level="0">
+    <if_matched_sid>5763</if_matched_sid>
+    <srcip>116.206.33.54</srcip>
+    <description>SSH: Brute force valid-user dari IP administrator (whitelist) - diabaikan.</description>
+  </rule>
+
+  <rule id="100216" level="0">
+    <if_sid>5503</if_sid>
+    <srcip>116.206.33.54</srcip>
+    <description>PAM: Authentication failure dari IP administrator (whitelist) - diabaikan.</description>
+  </rule>
+
+  <rule id="100217" level="0">
+    <if_matched_sid>5551</if_matched_sid>
+    <srcip>116.206.33.54</srcip>
+    <description>PAM: Brute force dari IP administrator (whitelist) - diabaikan.</description>
+  </rule>
+
+  <rule id="100218" level="0">
+    <if_sid>100102</if_sid>
+    <field name="src_ip">^116\.206\.33\.54$</field>
+    <description>Suricata: Nmap TCP SYN scan dari IP administrator (whitelist) - diabaikan.</description>
+  </rule>
+
+  <rule id="100219" level="0">
+    <if_sid>100103</if_sid>
+    <field name="src_ip">^116\.206\.33\.54$</field>
+    <description>Suricata: Portscan dari IP administrator (whitelist) - diabaikan.</description>
+  </rule>
+
+  <rule id="100220" level="0">
+    <if_sid>86601</if_sid>
+    <field name="src_ip">^116\.206\.33\.54$</field>
+    <description>Suricata: Alert lain dari IP administrator (whitelist) - diabaikan.</description>
+  </rule>
+
+</group>
