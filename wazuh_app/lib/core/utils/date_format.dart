@@ -14,7 +14,7 @@ String formatTime(String? ts) {
   if (ts == null) return '';
   try {
     final dt = DateTime.parse(ts);
-    return DateFormat('HH:mm').format(dt);
+    return DateFormat('HH:mm:ss').format(dt);
   } catch (_) {
     return ts;
   }
