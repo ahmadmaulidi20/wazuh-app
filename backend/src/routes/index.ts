@@ -7,6 +7,7 @@ import { DeviceController } from '../controllers/device.controller';
 import { WebhookController } from '../controllers/webhook.controller';
 import { authMiddleware } from '../middleware/auth';
 import { webhookAuth } from '../middleware/webhook-auth';
+import { prisma } from '../utils/prisma';
 
 const router = Router();
 
@@ -31,5 +32,36 @@ router.patch('/alerts/:id', authMiddleware, (req, res) => alertCtrl.updateStatus
 router.get('/agents', authMiddleware, (req, res) => agentCtrl.list(req, res));
 router.post('/device-token', authMiddleware, (req, res) => deviceCtrl.register(req, res));
 router.delete('/device-token', authMiddleware, (req, res) => deviceCtrl.unregister(req, res));
+
+// Temporary migration endpoint - REMOVE AFTER USE
+router.post('/migrate-tz', webhookAuth, async (_req, res) => {
+  try {
+    const results: string[] = [];
+
+    const r1 = await prisma.$executeRawUnsafe(
+      `UPDATE users SET created_at = created_at AT TIME ZONE 'Asia/Jakarta', updated_at = updated_at AT TIME ZONE 'Asia/Jakarta'`
+    );
+    results.push(`users: ${r1} rows`);
+
+    const r2 = await prisma.$executeRawUnsafe(
+      `UPDATE agents SET last_seen = last_seen AT TIME ZONE 'Asia/Jakarta', created_at = created_at AT TIME ZONE 'Asia/Jakarta', updated_at = updated_at AT TIME ZONE 'Asia/Jakarta' WHERE last_seen IS NOT NULL OR created_at IS NOT NULL`
+    );
+    results.push(`agents: ${r2} rows`);
+
+    const r3 = await prisma.$executeRawUnsafe(
+      `UPDATE alerts SET timestamp = timestamp AT TIME ZONE 'Asia/Jakarta', created_at = created_at AT TIME ZONE 'Asia/Jakarta' WHERE timestamp IS NOT NULL OR created_at IS NOT NULL`
+    );
+    results.push(`alerts: ${r3} rows`);
+
+    const r4 = await prisma.$executeRawUnsafe(
+      `UPDATE device_tokens SET created_at = created_at AT TIME ZONE 'Asia/Jakarta', updated_at = updated_at AT TIME ZONE 'Asia/Jakarta'`
+    );
+    results.push(`device_tokens: ${r4} rows`);
+
+    res.json({ success: true, results });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
 
 export default router;

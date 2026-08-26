@@ -6,6 +6,7 @@ services:
       POSTGRES_USER: wazuh
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-wazuh123}
       POSTGRES_DB: wazuh_monitor
+      TZ: Asia/Jakarta
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -24,6 +25,7 @@ services:
       WEBHOOK_API_KEY: ${WEBHOOK_API_KEY}
       FCM_CREDENTIALS_PATH: /app/firebase-service-account.json
       CORS_ORIGIN: ${CORS_ORIGIN:-*}
+      TZ: Asia/Jakarta
     ports:
       - "127.0.0.1:3000:3000"
     depends_on:

@@ -7,6 +7,7 @@ services:
       POSTGRES_USER: wazuh
       POSTGRES_PASSWORD: wazuh123
       POSTGRES_DB: wazuh_monitor
+      TZ: Asia/Jakarta
     ports:
       - "5432:5432"
     volumes:
@@ -23,6 +24,7 @@ services:
     env_file: .env
     environment:
       DATABASE_URL: "postgresql://wazuh:wazuh123@postgres:5432/wazuh_monitor?schema=public"
+      TZ: Asia/Jakarta
     ports:
       - "3000:3000"
     depends_on:
