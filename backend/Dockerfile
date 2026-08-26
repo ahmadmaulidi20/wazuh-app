@@ -17,7 +17,7 @@ FROM node:20-alpine AS runner
 
 WORKDIR /app
 
-RUN apk add --no-cache curl openssl
+RUN apk add --no-cache curl openssl tzdata
 
 COPY package*.json ./
 RUN npm ci --omit=dev && npm cache clean --force
