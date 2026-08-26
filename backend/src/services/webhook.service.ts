@@ -6,12 +6,7 @@ import { FcmService } from './fcm.service';
 import { alertHub } from './alert-hub';
 import { Prisma } from '@prisma/client';
 import { logger } from '../utils/logger';
-
-function parseWazuhTimestamp(value?: string): Date {
-  if (!value) return new Date();
-  const hasTimezone = /(Z|[+-]\d{2}:?\d{2})$/.test(value.trim());
-  return new Date(hasTimezone ? value : `${value}Z`);
-}
+import { parseWazuhTimestamp } from '../utils/wib';
 
 export class WebhookService {
   private alertService = new AlertService();

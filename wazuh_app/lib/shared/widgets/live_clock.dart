@@ -14,12 +14,14 @@ class _LiveClockState extends State<LiveClock> {
   late Timer _timer;
   late DateTime _now;
 
+  static DateTime _wibNow() => DateTime.now().toUtc().add(const Duration(hours: 7));
+
   @override
   void initState() {
     super.initState();
-    _now = DateTime.now();
+    _now = _wibNow();
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-      setState(() => _now = DateTime.now());
+      setState(() => _now = _wibNow());
     });
   }
 

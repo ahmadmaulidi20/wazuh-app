@@ -78,7 +78,7 @@ class NotificationNotifier extends StateNotifier<NotificationState> {
   }
 
   Future<void> markAllRead() async {
-    final now = DateTime.now();
+    final now = DateTime.now().toUtc();
     try {
       await _storage.write(key: _lastSeenKey, value: now.toIso8601String());
     } catch (_) {}

@@ -6,6 +6,7 @@ import rateLimit from 'express-rate-limit';
 import routes from './routes';
 import { errorHandler } from './middleware/error-handler';
 import { env } from './config/env';
+import { wibTodayStart } from './utils/wib';
 
 const app = express();
 
@@ -40,7 +41,9 @@ app.use('/api', limiter);
 app.use('/api', routes);
 
 app.get('/health', (_req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+  const WIB_OFFSET_MS = 7 * 60 * 60 * 1000;
+  const wib = new Date(Date.now() + WIB_OFFSET_MS);
+  res.json({ status: 'ok', timestamp: wib.toISOString().replace('Z', '+07:00') });
 });
 
 app.use(errorHandler);

@@ -1,10 +1,10 @@
 import { prisma } from '../utils/prisma';
 import { DashboardResponse } from '../types/wazuh';
+import { wibTodayStart } from '../utils/wib';
 
 export class DashboardService {
   async getStats(): Promise<DashboardResponse> {
-    const now = new Date();
-    const todayStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+    const todayStart = wibTodayStart();
 
     const [
       totalAlerts,
