@@ -6,7 +6,7 @@ import { FcmService } from './fcm.service';
 import { alertHub } from './alert-hub';
 import { Prisma } from '@prisma/client';
 import { logger } from '../utils/logger';
-import { parseWazuhTimestamp } from '../utils/wib';
+import { parseWazuhTimestamp, wibNow } from '../utils/wib';
 
 export class WebhookService {
   private alertService = new AlertService();
@@ -30,7 +30,7 @@ export class WebhookService {
         name: payload.agent.name || `Agent-${payload.agent.id}`,
         ip: payload.agent.ip,
         status: 'active',
-        lastSeen: new Date(),
+        lastSeen: wibNow(),
       });
     }
 
