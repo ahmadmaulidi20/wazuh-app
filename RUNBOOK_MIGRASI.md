@@ -132,6 +132,35 @@ sudo certbot --nginx -d siemkampus-monitoring-app.duckdns.org
 | Alerts masuk | dashboard / `alert` API |
 | Integrasi webhook | `tail -f /var/ossec/logs/ossec.log \| grep custom-wazuh` |
 
+### 5.3 pgAdmin: login "stuck di halaman login" / password salah
+
+Gejala: setelah submit kredensial, halaman tetap di login (tidak masuk panel).
+Penyebab paling umum:
+
+1. **Volume `pgadmin_data` punya kredensial lama.** `PGADMIN_DEFAULT_EMAIL/PASSWORD`
+   hanya dipakai SAAT PERTAMA container dibuat (saat `/var/lib/pgadmin/pgadmin4.db`
+   belum ada). Jika volume sudah ada, mengubah `.env.production` **tidak** mengubah
+   password login. Reset password tanpa hapus volume (tidak kehilangan server tersimpan):
+
+   ```bash
+   cd /opt/wazuh-app
+   sudo bash deploy/diagnose-pgadmin-login.sh                 # kumpulkan diagnosa dulu (read-only)
+   sudo bash deploy/fix-pgadmin-login.sh '<password-baru>'    # atau pakai PGADMIN_PASSWORD dari .env.production
+   # lalu hard-reload / incognito & login dengan admin@siemkampus.id + password baru
+   ```
+
+2. **Subpath/cookie.** Pastikan blok nginx `/pgadmin/` memakai
+   `X-Script-Name /pgadmin`, `X-Forwarded-Host $host`, dan `proxy_cookie_path / /pgadmin/`
+   (lihat `deploy/nginx.conf`), lalu `sudo nginx -t && sudo nginx -s reload`.
+
+3. **Cache browser.** Hard reload (Ctrl+Shift+R) atau buka mode incognito.
+
+Uji login penuh (POST+CSRF+redirect) untuk memastikan:
+   ```bash
+   cd /opt/wazuh-app
+   PGADMIN_PASSWORD='<pass>' sudo bash deploy/verify-pgadmin.sh
+   ```
+
 ---
 
 ## 6. Keamanan & Kepatuhan (repo PUBLIC)
