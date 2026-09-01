@@ -136,10 +136,14 @@ sudo certbot --nginx -d siemkampus-monitoring-app.duckdns.org
 
 Gejala: setelah submit kredensial, halaman tetap di login (login loop) — bukan pesan "password salah".
 
-> **Akar masalah yang terbukti (Sep 2026):** `PGADMIN_CONFIG_ROOT_URL='/pgadmin/'`
-> (di `pgadmin-compose.yml` / `config_distro.py`) **konflik double-prefix** dengan header
-> nginx `X-Script-Name /pgadmin` -> redirect balik ke login. **Hapus `ROOT_URL`; biarkan
-> `X-Script-Name` yang menangani subpath** (panduan resmi pgAdmin "HTTPS via Nginx").
+> **Akar masalah yang terbukti (Sep 2026), ada DUA:**
+> 1. `PGADMIN_CONFIG_ROOT_URL='/pgadmin/'` (di `pgadmin-compose.yml` / `config_distro.py`)
+>    **konflik double-prefix** dengan header nginx `X-Script-Name /pgadmin` -> redirect balik
+>    ke login. **Hapus `ROOT_URL`; biarkan `X-Script-Name` yang menangani subpath.**
+> 2. Default pgAdmin `ENHANCED_COOKIE_PROTECTION=True` dan `MASTER_PASSWORD_REQUIRED=True`
+>    **tidak cocok di subpath** (`__Host-*` cookie wajib `Path=/`). Wajib set keduanya ke
+>    `False` via `PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION` / `PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED`.
+>
 > Pastikan nginx block `/pgadmin/` memakai `X-Script-Name /pgadmin` + `X-Scheme $scheme`
 > dan **TANPA** `proxy_cookie_path` dan **TANPA** `sub_filter`.
 
@@ -151,10 +155,14 @@ Cara perbaiki (di VPS yang menjalankan container pgAdmin, mis. `backend-pgadmin-
    sed -i '/PGADMIN_CONFIG_ROOT_URL/d' pgadmin-compose.yml
    ```
 2. **Hapus `ROOT_URL` dari `config_distro.py` di dalam container** (file ini ditulis sekali
-   saat first launch, jadi mengubah compose saja TIDAK cukup; perlu root):
+   saat first launch, jadi mengubah compose saja TIDAK cukup; perlu root) **dan tambahkan
+   paksa `ENHANCED_COOKIE_PROTECTION=False` + `MASTER_PASSWORD_REQUIRED=False`** (karena env
+   baru tidak ditulis ulang ke file yang sudah ada):
    ```bash
    docker exec -u root backend-pgadmin-1 sh -c \
-     "grep -v -iE 'ROOT_URL' /pgadmin4/config_distro.py > /tmp/cd.new && mv /tmp/cd.new /pgadmin4/config_distro.py"
+     "grep -v -iE 'ROOT_URL' /pgadmin4/config_distro.py > /tmp/cd.new \
+        && printf '%s\n' 'ENHANCED_COOKIE_PROTECTION = False' 'MASTER_PASSWORD_REQUIRED = False' >> /tmp/cd.new \
+        && mv /tmp/cd.new /pgadmin4/config_distro.py"
    ```
 3. **Recreate container** biar env baru tanpa ROOT_URL terbaca:
    ```bash

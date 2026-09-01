@@ -44,9 +44,15 @@ services:
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin123}
       PGADMIN_CONFIG_SERVER_MODE: "True"
       # Subpath ditangani oleh header X-Script-Name /pgadmin di nginx (panduan
-      # RESMI pgAdmin "HTTPS via Nginx"). JANGAN set PGADMIN_CONFIG_ROOT_URL di
-      # mode container: kombinasi ROOT_URL + X-Script-Name membuat login
-      # loop (redirect balik ke halaman login).
+      # RESMI pgAdmin "HTTPS via Nginx"). JANGAN set PGADMIN_CONFIG_ROOT_URL —
+      # kombinasi ROOT_URL + X-Script-Name membuat login loop (double-prefix).
+      # PENTING: kedua nilai di bawah WAJIB "False". Default pgAdmin adalah True;
+      #   - ENHANCED_COOKIE_PROTECTION=True -> cookie __Host-* (wajib Path=/)
+      #     yang konflik dengan subpath /pgadmin/ -> login loop.
+      #   - MASTER_PASSWORD_REQUIRED=True    -> flow master password bermasalah
+      #     di belakang proxy subpath.
+      PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION: "False"
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
       PGADMIN_CONFIG_TIMEZONE: "'Asia/Jakarta'"
     volumes:
       - pgadmin_data:/var/lib/pgadmin
