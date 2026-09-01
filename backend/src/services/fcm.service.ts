@@ -1,4 +1,4 @@
-import { getMessaging } from '../config/firebase';
+import { getMessaging, isFirebaseReady } from '../config/firebase';
 import { prisma } from '../utils/prisma';
 import { logger } from '../utils/logger';
 
@@ -8,6 +8,8 @@ export class FcmService {
     ruleLevel?: number | null;
     sourceIp?: string | null;
   }) {
+    if (!isFirebaseReady()) return;
+
     try {
       const messaging = getMessaging();
       const tokens = await prisma.deviceToken.findMany({

@@ -25,6 +25,7 @@ const limiter = rateLimit({
   max: 100,
   standardHeaders: true,
   legacyHeaders: false,
+  skip: (req) => req.path === '/webhook/wazuh',
   message: { error: 'Too many requests, please try again later' },
 });
 const authLimiter = rateLimit({
@@ -41,7 +42,9 @@ app.use('/api', limiter);
 app.use('/api', routes);
 
 app.get('/health', (_req, res) => {
-  res.json({ status: 'ok', timestamp: wibNow().toISOString().replace('Z', '+07:00') });
+  const now = wibNow();
+  const iso = now.toISOString().replace('Z', '+07:00');
+  res.json({ status: 'ok', timestamp: iso });
 });
 
 app.use(errorHandler);

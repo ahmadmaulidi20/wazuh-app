@@ -37,6 +37,11 @@ export class AlertController {
       res.status(400).json({ error: 'Invalid status' });
       return;
     }
+    const existing = await this.alertService.getById(id);
+    if (!existing) {
+      res.status(404).json({ error: 'Alert not found' });
+      return;
+    }
     const alert = await this.alertService.updateStatus(id, status);
     res.json(alert);
   }

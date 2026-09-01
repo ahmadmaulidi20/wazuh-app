@@ -30,7 +30,7 @@ export class DeviceController {
 
   async unregister(req: Request, res: Response) {
     const user = req.user as AuthPayload;
-    const { token } = req.body;
+    const token = req.body?.token;
 
     if (!token) {
       res.status(400).json({ error: 'token required' });

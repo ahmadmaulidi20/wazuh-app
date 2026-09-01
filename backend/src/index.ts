@@ -27,6 +27,10 @@ wss.on('connection', (ws: WebSocket, req: http.IncomingMessage) => {
   alertHub.addClient(ws);
 });
 
+wss.on('error', (err) => {
+  logger.error(`WebSocket server error: ${err.message}`);
+});
+
 server.listen(env.port, () => {
   logger.info(`Server running on port ${env.port} (REST: /api, WS: /ws)`);
 });

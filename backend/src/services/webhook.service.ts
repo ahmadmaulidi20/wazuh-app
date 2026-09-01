@@ -14,7 +14,7 @@ export class WebhookService {
   private fcmService = new FcmService();
 
   async processAlert(payload: WazuhAlert) {
-    // Dedup by wazuh alert id
+    // Dedup 1: by wazuh alert id (race-condition safe via try/catch P2002)
     if (payload.id) {
       const existing = await this.alertService.getByWazuhId(payload.id);
       if (existing) {
@@ -34,9 +34,15 @@ export class WebhookService {
       });
     }
 
-    // Create alert
-    const ruleId = typeof payload.rule?.id === 'string' ? parseInt(payload.rule.id, 10) : payload.rule?.id;
-    const alert = await this.alertService.create({
+    // Parse ruleId safely – fall back to null on NaN
+    const rawRuleId = payload.rule?.id;
+    const ruleId = typeof rawRuleId === 'string'
+      ? (Number.isFinite(parseInt(rawRuleId, 10)) ? parseInt(rawRuleId, 10) : null)
+      : typeof rawRuleId === 'number'
+        ? rawRuleId
+        : null;
+
+    const alertData = {
       wazuhAlertId: payload.id,
       ruleId,
       ruleDescription: payload.rule?.description?.slice(0, 500),
@@ -51,20 +57,44 @@ export class WebhookService {
       agentName: payload.agent?.name,
       location: payload.location,
       fullLog: payload.full_log?.slice(0, 2000),
-      rawData: JSON.parse(JSON.stringify(payload)),
+      rawData: JSON.parse(JSON.stringify(payload)) as unknown as Prisma.InputJsonValue,
       timestamp: parseWazuhTimestamp(payload.timestamp),
-    });
+    };
 
-    // Broadcast alert to real-time clients (WebSocket)
-    alertHub.broadcast({ type: 'alert', data: alert });
+    let alert;
+    try {
+      alert = await this.alertService.create(alertData);
+    } catch (err) {
+      // P2002 = unique constraint violation (race condition dedup)
+      if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
+        logger.info(`Duplicate alert caught by DB constraint: ${payload.id ?? '(no id)'}`);
+        if (payload.id) {
+          const existing = await this.alertService.getByWazuhId(payload.id);
+          if (existing) return existing;
+        }
+        throw err;
+      }
+      throw err;
+    }
+
+    // Broadcast alert to real-time clients (WebSocket) – wrapped in try/catch
+    try {
+      alertHub.broadcast({ type: 'alert', data: alert });
+    } catch (err) {
+      logger.error(`WebSocket broadcast failed: ${(err as Error).message}`);
+    }
 
     // Send FCM notification (only for level >= 7)
     if (payload.rule?.level && payload.rule.level >= 7) {
-      await this.fcmService.sendAlertNotification({
-        ruleDescription: payload.rule?.description,
-        ruleLevel: payload.rule?.level,
-        sourceIp: payload.srcip ?? (payload.data?.srcip as string) ?? (payload.data?.src_ip as string),
-      });
+      try {
+        await this.fcmService.sendAlertNotification({
+          ruleDescription: payload.rule?.description,
+          ruleLevel: payload.rule?.level,
+          sourceIp: payload.srcip ?? (payload.data?.srcip as string) ?? (payload.data?.src_ip as string),
+        });
+      } catch (err) {
+        logger.error(`FCM notification failed: ${(err as Error).message}`);
+      }
     }
 
     logger.info(`Alert processed: ${payload.rule?.description} (level ${payload.rule?.level})`);

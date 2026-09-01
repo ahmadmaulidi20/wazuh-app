@@ -20,7 +20,12 @@ export function initFirebase() {
     console.log('Firebase initialized');
   } catch (err) {
     console.warn('Firebase not configured, FCM disabled:', (err as Error).message);
+    fcmInitialized = false;
   }
+}
+
+export function isFirebaseReady(): boolean {
+  return fcmInitialized;
 }
 
 export { getMessaging };

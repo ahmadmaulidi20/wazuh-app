@@ -1,30 +1,35 @@
 const WIB_OFFSET_MS = 7 * 60 * 60 * 1000;
 
-/** Waktu sekarang sebagai WIB (disimpan sebagai UTC-equivalent di DB) */
+/** Waktu sekarang sebagai WIB-as-UTC (disimpan di DB) */
 export function wibNow(): Date {
   return new Date(Date.now() + WIB_OFFSET_MS);
 }
 
-/** Parse timestamp Wazuh → simpan sebagai WIB */
+/**
+ * Parse timestamp Wazuh → simpan sebagai WIB-as-UTC di DB.
+ *
+ * Aturan:
+ *  - Jika timestamp punya zona waktu (Z, +07:00, dst) → gunakan nilai UTC-nya langsung.
+ *  - Jika TANPA zona waktu → asumsikan Wazuh mengirim waktu UTC, tambah +7h (WIB).
+ *    (Wazuh default mengirim UTC tanpa suffix zona waktu.)
+ */
 export function parseWazuhTimestamp(value?: string): Date {
   if (!value) return wibNow();
   const trimmed = value.trim();
   const hasTimezone = /(Z|[+-]\d{2}:?\d{2})$/.test(trimmed);
-  let utcDate: Date;
+  let utcMs: number;
   if (hasTimezone) {
-    utcDate = new Date(trimmed);
+    utcMs = new Date(trimmed).getTime();
   } else {
-    utcDate = new Date(`${trimmed}Z`);
+    utcMs = new Date(`${trimmed}Z`).getTime();
   }
-  return new Date(utcDate.getTime() + WIB_OFFSET_MS);
+  return new Date(utcMs + WIB_OFFSET_MS);
 }
 
-/** Mulai hari ini dalam WIB (untuk query "alerts today") */
+/** Mulai hari ini dalam WIB-as-UTC (untuk query "alerts today") */
 export function wibTodayStart(): Date {
   const now = new Date();
-  const wibNow = new Date(now.getTime() + WIB_OFFSET_MS);
-  const year = wibNow.getUTCFullYear();
-  const month = wibNow.getUTCMonth();
-  const day = wibNow.getUTCDate();
-  return new Date(Date.UTC(year, month, day));
+  const wibMs = now.getTime() + WIB_OFFSET_MS;
+  const d = new Date(wibMs);
+  return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
 }
