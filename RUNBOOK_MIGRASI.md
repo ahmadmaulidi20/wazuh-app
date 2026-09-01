@@ -132,32 +132,45 @@ sudo certbot --nginx -d siemkampus-monitoring-app.duckdns.org
 | Alerts masuk | dashboard / `alert` API |
 | Integrasi webhook | `tail -f /var/ossec/logs/ossec.log \| grep custom-wazuh` |
 
-### 5.3 pgAdmin: login "stuck di halaman login" / password salah
+### 5.3 pgAdmin: login "stuck di halaman login" / login loop
 
-Gejala: setelah submit kredensial, halaman tetap di login (tidak masuk panel).
-Penyebab paling umum:
+Gejala: setelah submit kredensial, halaman tetap di login (login loop) — bukan pesan "password salah".
 
-1. **Volume `pgadmin_data` punya kredensial lama.** `PGADMIN_DEFAULT_EMAIL/PASSWORD`
-   hanya dipakai SAAT PERTAMA container dibuat (saat `/var/lib/pgadmin/pgadmin4.db`
-   belum ada). Jika volume sudah ada, mengubah `.env.production` **tidak** mengubah
-   password login. Reset password tanpa hapus volume (tidak kehilangan server tersimpan):
+> **Akar masalah yang terbukti (Sep 2026):** `PGADMIN_CONFIG_ROOT_URL='/pgadmin/'`
+> (di `pgadmin-compose.yml` / `config_distro.py`) **konflik double-prefix** dengan header
+> nginx `X-Script-Name /pgadmin` -> redirect balik ke login. **Hapus `ROOT_URL`; biarkan
+> `X-Script-Name` yang menangani subpath** (panduan resmi pgAdmin "HTTPS via Nginx").
+> Pastikan nginx block `/pgadmin/` memakai `X-Script-Name /pgadmin` + `X-Scheme $scheme`
+> dan **TANPA** `proxy_cookie_path` dan **TANPA** `sub_filter`.
 
+Cara perbaiki (di VPS yang menjalankan container pgAdmin, mis. `backend-pgadmin-1`):
+
+1. **Hapus `PGADMIN_CONFIG_ROOT_URL` dari compose yang dipakai** (mis. `pgadmin-compose.yml`):
    ```bash
-   cd /opt/wazuh-app
-   sudo bash deploy/diagnose-pgadmin-login.sh                 # kumpulkan diagnosa dulu (read-only)
-   sudo bash deploy/fix-pgadmin-login.sh '<password-baru>'    # atau pakai PGADMIN_PASSWORD dari .env.production
-   # lalu hard-reload / incognito & login dengan admin@siemkampus.id + password baru
+   cd /home/wazuh/wazuh-app/deploy
+   sed -i '/PGADMIN_CONFIG_ROOT_URL/d' pgadmin-compose.yml
    ```
+2. **Hapus `ROOT_URL` dari `config_distro.py` di dalam container** (file ini ditulis sekali
+   saat first launch, jadi mengubah compose saja TIDAK cukup; perlu root):
+   ```bash
+   docker exec -u root backend-pgadmin-1 sh -c \
+     "grep -v -iE 'ROOT_URL' /pgadmin4/config_distro.py > /tmp/cd.new && mv /tmp/cd.new /pgadmin4/config_distro.py"
+   ```
+3. **Recreate container** biar env baru tanpa ROOT_URL terbaca:
+   ```bash
+   docker compose -f pgadmin-compose.yml up -d --force-recreate pgadmin
+   ```
+4. **Hard reload / incognito**, lalu login (`admin@siemkampus.id` + password = `PGADMIN_DEFAULT_PASSWORD`).
 
-2. **Subpath/cookie.** Pastikan blok nginx `/pgadmin/` memakai
-   `X-Script-Name /pgadmin`, `X-Forwarded-Host $host`, dan `proxy_cookie_path / /pgadmin/`
-   (lihat `deploy/nginx.conf`), lalu `sudo nginx -t && sudo nginx -s reload`.
+Penyebab lain yang mungkin:
+- **Volume punya kredensial lama**: `PGADMIN_DEFAULT_PASSWORD` hanya dipakai saat container
+  pertama dibuat. Reset password tanpa hapus volume: `sudo bash deploy/fix-pgadmin-login.sh '<pass>'`.
+- **Cache browser**: hard reload / incognito.
 
-3. **Cache browser.** Hard reload (Ctrl+Shift+R) atau buka mode incognito.
-
-Uji login penuh (POST+CSRF+redirect) untuk memastikan:
+Verifikasi login penuh (POST+CSRF+redirect) & indikator login loop:
    ```bash
    cd /opt/wazuh-app
+   sudo bash deploy/diagnose-pgadmin-login.sh        # cek ROOT_URL/proxy_cookie_path/X-Scheme
    PGADMIN_PASSWORD='<pass>' sudo bash deploy/verify-pgadmin.sh
    ```
 
