@@ -36,23 +36,10 @@ new_block = '''    location /pgadmin/ {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_set_header X-Script-Name /pgadmin;
+        proxy_set_header X-Scheme $scheme;
         proxy_read_timeout 3600s;
         proxy_send_timeout 3600s;
-        proxy_redirect / /pgadmin/;
-        proxy_cookie_path / /pgadmin/;
-
-        sub_filter_once off;
-        sub_filter_types text/html;
-        sub_filter 'href="/static/' 'href="/pgadmin/static/';
-        sub_filter 'src="/static/' 'src="/pgadmin/static/';
-        sub_filter 'href="/browser/' 'href="/pgadmin/browser/';
-        sub_filter 'src="/browser/' 'src="/pgadmin/browser/';
-        sub_filter 'src="/tools/' 'src="/pgadmin/tools/';
-        sub_filter 'src="/vendor/' 'src="/pgadmin/vendor/';
-        sub_filter 'href="/assets/' 'href="/pgadmin/assets/';
-        sub_filter 'src="/assets/' 'src="/pgadmin/assets/';
-        sub_filter 'src="/favicon' 'src="/pgadmin/favicon';
-        sub_filter 'href="/favicon' 'href="/pgadmin/favicon';
+        proxy_redirect off;
     }
 '''
 
