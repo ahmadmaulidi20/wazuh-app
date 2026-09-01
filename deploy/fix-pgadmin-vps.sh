@@ -1,9 +1,9 @@
 #!/bin/bash
 # ============================================================
 # FIX pgAdmin Blank White Page on VPS (nginx native)
-# Apply the proven-working nginx /pgadmin/ reverse-proxy block.
-# Run on the VPS via SSH. Does NOT mutate the pgAdmin container.
-# Sealum itu pastikan .htpasswd sudah benar, mis. lewat setup-htpasswd.sh.
+# Apply the proven-working nginx /pgadmin/ reverse-proxy block,
+# then recreate the pgAdmin container so ROOT_URL/SCRIPT_NAME config is read.
+# Run on the VPS via SSH. Pastikan .htpasswd sudah benar, mis. lewat setup-htpasswd.sh.
 # ============================================================
 set -e
 
@@ -48,8 +48,19 @@ if pat.search(c):
     c = pat.sub(new_block, c, count=1)
     print("  REPLACED /pgadmin/ block")
 else:
-    print("  WARNING: /pgadmin/ block not found; leaving config unchanged.")
-    sys.exit(0)
+    # Blok /pgadmin/ belum ada -> sisipkan sebelum blok "location / {" (Flutter static).
+    # Jangan sisipkan setelah blok /health agar urutan lokasi tetap valid.
+    anchor = re.compile(r'(\n    # Flutter web build - serve static files)')
+    if anchor.search(c) or re.search(r'\n    location / \{', c):
+        c = re.sub(
+            r'\n    location / \{',
+            new_block + '\n\n    location / {',
+            c, count=1
+        )
+        print("  INSERTED /pgadmin/ block before 'location /'")
+    else:
+        c = c.rstrip('\n') + '\n' + new_block
+        print("  INSERTED /pgadmin/ block at end of server block")
 
 with open(path, 'w') as f:
     f.write(c)
@@ -76,8 +87,30 @@ code=$(curl -sk -o /dev/null -w '%{http_code}' -u "$HTPASSWD_USER:$HTPASSWD_PASS
 echo "  /pgadmin/ (basic auth) -> HTTP $code"
 code2=$(curl -sk -o /dev/null -w '%{http_code}' "$URL/health")
 echo "  /health -> HTTP $code2"
+
+echo ""
+echo "=== Container pgAdmin: recreate agar ROOT_URL/SCRIPT_NAME termuat ==="
+# config_distro.py hanya ditulis pada first launch; pastikan env dibaca ulang.
+if docker ps --format '{{.Image}}' | grep -qi pgadmin; then
+    echo "  Recreate container pgAdmin supaya PGADMIN_CONFIG_ROOT_URL dipakai ..."
+    if docker compose -f "$(dirname "$0")/docker-compose.prod.yml" \
+        --env-file "$(dirname "$0")/.env.production" up -d --force-recreate pgadmin 2>&1; then
+        echo "  pgAdmin recreated OK"
+    else
+        echo "  [WARN] Gagal recreate via compose (mungkin compose path beda)."
+        echo "         Restart manual: docker restart <pgadmin-container>"
+    fi
+else
+    echo "  Container pgAdmin tidak terlihat di host ini (skip recreate)."
+fi
+
 echo ""
 echo "NOTE: basic-auth password diambil dari env HTPASSWD_PASS (default CHANGE_ME)."
 echo "Set HTPASSWD_USER/HTPASSWD_PASS saat menjalankan, atau pakai setup-htpasswd.sh terlebih dahulu."
 echo "pgAdmin login: admin@siemkampus.id (password = PGADMIN_DEFAULT_PASSWORD in compose)."
+echo ""
+echo "=== PENTING (error 'Not Found' di PANEL kerja) ==="
+echo "Setelah nginx + container diperbaiki, cache browser lama tetap bisa memicu 404:"
+echo "  * Hard reload (Ctrl+Shift+R) ATAU buka mode incognito, lalu login ulang ke $URL/pgadmin/."
+echo "  * Cek DevTools > Network: pastikan TIDAK ada request /pgadmin/pgadmin/... (double-prefix)."
 echo "=== DONE ==="
