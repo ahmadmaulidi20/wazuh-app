@@ -16,7 +16,7 @@ app.use((err, req, res, next) => {
 
 const server = app.listen(3099, () => {
   const http = require('http');
-  const data = JSON.stringify({username: 'admin', password: 'admin123'});
+  const data = JSON.stringify({username: 'admin', password: process.env.ADMIN_PASSWORD || 'CHANGE_ME'});
   const opts = {
     hostname: 'localhost',
     port: 3099,

@@ -1,5 +1,5 @@
 const http = require('http');
-const data = JSON.stringify({username: 'admin', password: 'admin123'});
+const data = JSON.stringify({username: 'admin', password: process.env.ADMIN_PASSWORD || 'CHANGE_ME'});
 const opts = {
   hostname: '103.30.194.158',
   port: 3000,

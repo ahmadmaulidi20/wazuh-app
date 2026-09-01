@@ -9,3 +9,6 @@ deploy/*.tar.gz
 node_modules/
 dist/
 .env
+
+# Hasil backup config VPS & dump database (PRIVATE - tidak boleh di-commit)
+backups/

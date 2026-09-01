@@ -1,7 +1,7 @@
 // Test the actual running server from inside the container
 const http = require('http');
 
-const data = JSON.stringify({username: 'admin', password: 'admin123'});
+const data = JSON.stringify({username: 'admin', password: process.env.ADMIN_PASSWORD || 'CHANGE_ME'});
 const opts = {
   hostname: 'localhost',
   port: 3000,

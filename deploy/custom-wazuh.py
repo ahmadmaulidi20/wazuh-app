@@ -6,7 +6,7 @@ import os
 import requests
 
 alert_path = sys.argv[1]
-api_key = sys.argv[2] if len(sys.argv) > 2 else os.environ.get("API_KEY", "0d6630a9f1c2500daec2a16419e56b666e28fefb4b8c52a6")
+api_key = sys.argv[2] if len(sys.argv) > 2 else os.environ.get("API_KEY", "CHANGE_ME")
 webhook_url = sys.argv[3] if len(sys.argv) > 3 else os.environ.get("WEBHOOK_URL", "http://localhost:3000/api/webhook/wazuh")
 
 try:

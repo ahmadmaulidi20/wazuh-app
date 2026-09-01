@@ -11,7 +11,7 @@ const opts = {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
-    'X-API-Key': '0d6630a9f1c2500daec2a16419e56b666e28fefb4b8c52a6',
+    'X-API-Key': process.env.WEBHOOK_API_KEY || 'CHANGE_ME',
     'Content-Length': Buffer.byteLength(data)
   }
 };

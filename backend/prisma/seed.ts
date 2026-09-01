@@ -4,7 +4,8 @@ import bcrypt from 'bcryptjs';
 const prisma = new PrismaClient();
 
 async function main() {
-  const passwordHash = await bcrypt.hash('admin123', 12);
+  const seedPassword = process.env.SEED_ADMIN_PASSWORD || 'admin123';
+  const passwordHash = await bcrypt.hash(seedPassword, 12);
 
   const admin = await prisma.user.upsert({
     where: { username: 'admin' },
@@ -17,7 +18,7 @@ async function main() {
   });
 
   // eslint-disable-next-line no-console
-  console.log(`Admin seeded: ${admin.username} (password: admin123)`);
+  console.log(`Admin seeded: ${admin.username} (password comes from SEED_ADMIN_PASSWORD env, default admin123 for dev only)`);
 }
 
 main()
