@@ -76,10 +76,12 @@ else
 fi
 echo ""
 echo "  --- Env ROOT_URL di container (indikator konflik subpath) ---"
-docker inspect "$CONTAINER" | grep -q 'PGADMIN_CONFIG_ROOT_URL' \
-    && echo "  [BENDERA MERAH] PGADMIN_CONFIG_ROOT_URL MASIH TERPASANG -> konflik dgn X-Script-Name bisa bikin"
-    && echo "                  login loop. HAPUS dari docker-compose (biarkan X-Script-Name yg menangani prefix)." \
-    || echo "  [OK] PGADMIN_CONFIG_ROOT_URL tidak terpasang."
+if docker inspect "$CONTAINER" | grep -q 'PGADMIN_CONFIG_ROOT_URL'; then
+    echo "  [BENDERA MERAH] PGADMIN_CONFIG_ROOT_URL MASIH TERPASANG -> konflik dgn X-Script-Name bisa bikin"
+    echo "                  login loop. HAPUS dari compose (biarkan X-Script-Name yg menangani prefix)."
+else
+    echo "  [OK] PGADMIN_CONFIG_ROOT_URL tidak terpasang."
+fi
 
 echo ""
 echo "=== [7] Rekam jejak: apakah ada skrip perbaikan di /opt/wazuh-app ==="
