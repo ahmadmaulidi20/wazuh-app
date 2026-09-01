@@ -43,7 +43,10 @@ services:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@siemkampus.id}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin123}
       PGADMIN_CONFIG_SERVER_MODE: "True"
-      PGADMIN_CONFIG_ROOT_URL: "'https://siemkampus-monitoring-app.duckdns.org/pgadmin/'"
+      # Subpath ditangani oleh header X-Script-Name /pgadmin di nginx (panduan
+      # RESMI pgAdmin "HTTPS via Nginx"). JANGAN set PGADMIN_CONFIG_ROOT_URL di
+      # mode container: kombinasi ROOT_URL + X-Script-Name bisa membuat login
+      # loop (redirect balik ke halaman login).
       PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION: "False"
       PGADMIN_CONFIG_LOGIN_BANNER: "''"
       PGADMIN_CONFIG_CHECK_DATABASE_FILES: "False"

@@ -51,7 +51,35 @@ docker exec -u pgadmin "$CONTAINER" sh -c 'netstat -ltnp 2>/dev/null | grep -E "
 
 echo ""
 echo "=== [6] Konfigurasi nginx saat ini untuk /pgadmin/ ==="
-nginx -T 2>/dev/null | grep -iA8 'location /pgadmin/' || echo "  (nginx -T butuh root — jalankan: sudo nginx -T | grep -iA8 -e 'location /pgadmin/')"
+NGINX_DUMP="$(nginx -T 2>/dev/null)"
+if [ -z "$NGINX_DUMP" ]; then
+    echo "  (nginx -T butuh root — jalankan: sudo nginx -T | grep -iA8 -e 'location /pgadmin/')"
+else
+    echo "$NGINX_DUMP" | grep -iA8 'location /pgadmin/' || echo "  [FAIL] tidak ada 'location /pgadmin/' di nginx"
+    echo ""
+    echo "  --- Scan indikator LOGIN LOOP (cookie/scheme/prefix) ---"
+    if echo "$NGINX_DUMP" | grep -qi 'proxy_cookie_path'; then
+        echo "  [BENDERA MERAH] proxy_cookie_path DITEMUKAN -> TIDAK ada di panduan resmi pgAdmin."
+        echo "                 Rewrite Path cookie bisa memicu login loop. HAPUS dari blok /pgadmin/."
+    else
+        echo "  [OK] tidak ada proxy_cookie_path."
+    fi
+    if echo "$NGINX_DUMP" | grep -qi 'X-Scheme \$scheme' || echo "$NGINX_DUMP" | grep -qi 'X-Scheme'; then
+        echo "  [OK] X-Scheme \$scheme ada -> pgAdmin tahu koneksi HTTPS (untuk cookie Secure/redirect)."
+    else
+        echo "  [BENDERA MERAH] X-Scheme TIDAK ada di blok /pgadmin/ -> pgAdmin tidak tahu HTTPS,"
+        echo "                  redirect/cookie bisa salah. Tambahkan: proxy_set_header X-Scheme \$scheme;"
+    fi
+    echo "$NGINX_DUMP" | grep -qi 'location /pgadmin/pgadmin' && \
+        echo "  [BENDERA MERAH] double-prefix /pgadmin/pgadmin DITEMUKAN -> hilangkan sub_filter." || \
+        echo "  [OK] tidak ada double-prefix /pgadmin/pgadmin."
+fi
+echo ""
+echo "  --- Env ROOT_URL di container (indikator konflik subpath) ---"
+docker inspect "$CONTAINER" | grep -q 'PGADMIN_CONFIG_ROOT_URL' \
+    && echo "  [BENDERA MERAH] PGADMIN_CONFIG_ROOT_URL MASIH TERPASANG -> konflik dgn X-Script-Name bisa bikin"
+    && echo "                  login loop. HAPUS dari docker-compose (biarkan X-Script-Name yg menangani prefix)." \
+    || echo "  [OK] PGADMIN_CONFIG_ROOT_URL tidak terpasang."
 
 echo ""
 echo "=== [7] Rekam jejak: apakah ada skrip perbaikan di /opt/wazuh-app ==="
