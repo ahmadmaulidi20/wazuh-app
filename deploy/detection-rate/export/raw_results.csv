@@ -1,0 +1,23 @@
+skenario,threshold,intensitas,serangan_terjadi,alert_muncul,keterangan
+A_brute_10x,freq8_120s,10_login,1,1,TP: rule 5763 level=10 src=198.51.200.1 10 failed-password (above threshold)
+A_brute_10x,freq8_120s,10_login,1,1,TP: rule 5763 level=10 src=198.51.200.2 10 failed-password (above threshold)
+A_brute_10x,freq8_120s,10_login,1,1,TP: rule 5763 level=10 src=198.51.200.3 10 failed-password (above threshold)
+A_brute_10x,freq8_120s,10_login,1,1,TP: rule 5763 level=10 src=198.51.200.4 10 failed-password (above threshold)
+A_brute_10x,freq8_120s,10_login,1,1,TP: rule 5763 level=10 src=198.51.200.5 10 failed-password (above threshold)
+A_brute_10x,freq8_120s,10_login,1,1,TP: rule 5763 level=10 src=198.51.200.6 10 failed-password (above threshold)
+A_brute_10x,freq8_120s,10_login,1,1,TP: rule 5763 level=10 src=198.51.200.7 10 failed-password (above threshold)
+A_brute_10x,freq8_120s,5_login,1,0,FN: rule 5763 TIDAK fire src=198.51.200.8 5 failed-password (below threshold 8)
+A_brute_10x,freq8_120s,5_login,1,0,FN: rule 5763 TIDAK fire src=198.51.200.9 5 failed-password (below threshold 8)
+A_brute_10x,freq8_120s,5_login,1,0,FN: rule 5763 TIDAK fire src=198.51.200.10 5 failed-password (below threshold 8)
+B_portscan_ON,count8_60s,top200,1,1,TP: rule 100102 src=103.30.194.158 17:53:28 (spaced >60s)
+B_portscan_ON,count8_60s,top200,1,1,TP: rule 100102 src=103.30.194.158 17:54:36 (spaced >60s)
+B_portscan_ON,count8_60s,top200,1,1,TP: rule 100102 src=103.30.194.158 17:55:44 (spaced >60s)
+B_portscan_ON,count8_60s,top200,1,1,TP: rule 100102 src=103.30.194.158 17:56:52 (spaced >60s)
+B_portscan_ON,count8_60s,top200,1,1,TP: rule 100102 src=103.30.194.158 17:57:58 (spaced >60s)
+B_portscan_ON,count8_60s,top200,1,1,TP: rule 100102 src=103.30.194.158 17:59:06 (spaced >60s)
+B_portscan_ON,count8_60s,top200,1,1,TP: rule 100102 src=103.30.194.158 18:00:12 (spaced >60s)
+B_portscan_ON,count8_60s,top200,1,1,TP: rule 100102 src=103.30.194.158 18:01:20 (scan 8; window reset)
+B_portscan_ON,count8_60s,top200,1,0,FN: rule 100102 TIDAK fire src=103.30.194.158 18:01:28 (dalam 60s window)
+B_portscan_ON,count8_60s,top200,1,0,FN: rule 100102 TIDAK fire src=103.30.194.158 18:01:33 (dalam 60s window)
+B_portscan_OFF,count8_60s,top200,1,0,FN: src=103.30.194.158 Suricata OFF; tidak ada alert 100102
+C_whitelist,count8_60s,top200,1,0,FN: scan src=116.206.33.54 (whitelist) tidak ada alert 100102

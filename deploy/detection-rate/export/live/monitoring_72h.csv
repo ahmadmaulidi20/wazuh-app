@@ -1,0 +1,25 @@
+﻿No|Waktu|IP Sumber|Aktivitas|Alert|Active Response|Status Block|Notifikasi
+1|2026-09-04 17:14:12|103.30.194.158|Port Scanning (rule 100102)|10|-|Normal|Terkirim
+2|2026-09-04 17:20:06|103.30.194.158|Port Scanning (rule 100102)|10|-|Normal|Terkirim
+3|2026-09-04 17:09-17:32|198.51.100.1/3/7|SSH Brute Force (rule 5763)|10|-|Normal|Terkirim
+4|2026-09-04 17:34-17:46|198.51.200.1-7|SSH Brute Force (rule 5763) x7|10|-|Normal|Terkirim
+5|2026-09-04 17:53-18:01|103.30.194.158|Port Scanning top200 grid x8|10|-|Normal|Terkirim
+6|2026-09-04 18:02:52|190.51.32.249|Port Scanning (rule 100102)|10|-|Normal|Terkirim
+7|2026-09-04 18:46-18:58|103.30.194.158|Port Scanning 1-1000 x11|10|-|Normal|Terkirim
+8|2026-09-04 19:00-19:11|103.30.194.158|Port Scanning top200 x12|10|-|Normal|Terkirim
+9|2026-09-04 19:13-19:20|103.30.194.158|Port Scanning 1-65535 x5|10|-|Normal|Terkirim
+10|2026-09-04 19:22:37|103.30.194.158|Port Scanning (rule 100102)|10|-|Normal|Terkirim
+11|2026-09-04 19:23:43|198.51.200.20|SSH Brute Force (rule 5763)|10|-|Normal|Terkirim
+12|2026-09-04 19:24:48|198.51.200.21|SSH Brute Force (rule 5763)|10|firewall-drop|Blocked (600s)|Terkirim
+13|2026-09-04 19:29:56|180.247.238.165|SSH Brute Force (rule 5763)|10|firewall-drop|Blocked (600s)|Terkirim
+14|2026-09-04 19:33:40|198.51.100.80|SSH Brute Force (rule 5763)|10|firewall-drop|Blocked (600s)|Terkirim
+15|2026-09-04 19:39:43|198.51.100.90|SSH Brute Force (rule 5763)|10|firewall-drop|Blocked (600s)|Terkirim
+16|2026-09-04 19:43:21|103.194.7.11|SSH Brute Force (rule 5763)|10|firewall-drop|Blocked (600s)|Terkirim
+17|2026-09-04 19:49:00|190.22.179.253|Port Scanning (rule 100102)|10|firewall-drop-suricata|Blocked (600s)|Terkirim
+18|2026-09-04 22:07:23|103.134.154.12|Port Scanning (rule 100102) x2|10|-|Normal|Terkirim
+19|2026-09-04 22:21:38|198.51.100.41/42|Port Scanning (rule 100102)|10|firewall-drop-suricata|Blocked (600s)|Terkirim
+20|2026-09-04 22:57-23:04|103.30.194.158|Port Scanning (rule 100102) x3|10|-|Normal|Terkirim
+21|2026-09-04 23:10-23:11|198.51.100.11-20, 198.18.0.31-32|Port Scanning (rule 100102) uji 12 IP|10|firewall-drop-suricata|Blocked (12/12, 600s)|Terkirim
+22|2026-09-04 23:25|webhook sintetis|Notifikasi test x12 (rule 31151)|10|-|Normal|Terkirim (4 token)
+23|2026-09-07 01:03-01:04|-|Dpkg install/half-config (rule 2902/2904/2903) x61|7|-|Normal|Terkirim (61 FCM)
+24|2026-09-07 02:21-03:52|66.132.172.240, 66.132.186.208, 45.82.76.134, 194.88.98.88, 80.94.95.245, 104.64.208.24, 181.80.144.60, dll|Scan & threat Suricata agent (ET DROP/CINS, SSH scan)|-|-|Normal|-

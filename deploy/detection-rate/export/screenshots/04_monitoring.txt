@@ -1,0 +1,12 @@
+=== [4.4.1] MONITORING 72 JAM ===
+35419 sudo nohup bash /tmp/monitor_72h.sh
+35420 bash /tmp/monitor_72h.sh
+128369 sudo pgrep -af monitor_72h
+128370 sudo pgrep -af monitor_72h
+----- total baris log -----
+1931 /var/log/monitor_72h.log
+----- isi awal log -----
+=== 72H MONITORING STARTED at Fri Sep  4 17:27:26 WIB 2026 ===
+Baseline alert count: 995
+
+[2026-09-04 17:32:26] Total: 1094 | New since last: 99

@@ -1,0 +1,14 @@
+skenario,range_port,target,intensitas,serangan# ,waktu_mulai,waktu_alert_100102,detection_time_s,hasil,keterangan
+B_portscan_1_1000,1-1000,103.134.154.12,1_scan,1,18:46:44,18:46:45.862,1.86,TP,detected Nmap TCP SYN
+B_portscan_1_1000,1-1000,103.134.154.12,1_scan,2,18:47:54,18:47:55.888,1.89,TP,detected Nmap TCP SYN
+B_portscan_1_1000,1-1000,103.134.154.12,1_scan,3,18:49:04,18:49:05.927,1.93,TP,detected Nmap TCP SYN
+B_portscan_1_1000,1-1000,103.134.154.12,1_scan,4,18:50:13,18:50:15.971,2.97,TP,detected Nmap TCP SYN
+B_portscan_1_1000,1-1000,103.134.154.12,1_scan,5,18:51:24,18:51:26.016,2.02,TP,detected Nmap TCP SYN
+B_portscan_1_1000,1-1000,103.134.154.12,1_scan,6,18:52:34,18:52:36.069,2.07,TP,detected Nmap TCP SYN
+B_portscan_1_1000,1-1000,103.134.154.12,1_scan,7,18:53:43,18:53:44.127,1.13,TP,detected Nmap TCP SYN
+B_portscan_1_1000,1-1000,103.134.154.12,1_scan,8,18:54:53,18:54:54.166,1.17,TP,detected Nmap TCP SYN
+B_portscan_1_1000,1-1000,103.134.154.12,1_scan,9,18:56:03,18:56:04.210,1.21,TP,detected Nmap TCP SYN
+B_portscan_1_1000,1-1000,103.134.154.12,1_scan,10,18:57:13,18:57:14.236,1.24,TP,detected Nmap TCP SYN
+B_portscan_1_1000,1-1000,103.134.154.12,rapid_3scan,11,18:58:38,18:58:40.300,2.30,TP,window reset >60s since prior
+B_portscan_1_1000,1-1000,103.134.154.12,rapid_3scan,12,18:58:45,-,-,FN,dalam window 60s suppression (count<8/60s)
+B_portscan_1_1000,1-1000,103.134.154.12,rapid_3scan,13,18:58:52,-,-,FN,dalam window 60s suppression (count<8/60s)

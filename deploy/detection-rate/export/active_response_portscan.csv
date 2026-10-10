@@ -1,0 +1,13 @@
+source_ip,ip_class,alert_rule,alert_level,blocked,block_mechanism,response_time_sec,notes
+198.51.100.11,attacker(RFC5737),100102,10,yes,iptables-DROP,0.05,verifikasi AR firewall-drop-suricata - rule 100102 terpicu, aturan DROP mendarat
+198.51.100.12,attacker(RFC5737),100102,10,yes,iptables-DROP,0.07,verifikasi AR firewall-drop-suricata - aturan DROP mendarat (INPUT)
+198.51.100.13,attacker(RFC5737),100102,10,yes,iptables-DROP,0.06,verifikasi AR firewall-drop-suricata - aturan DROP mendarat (INPUT)
+198.51.100.14,attacker(RFC5737),100102,10,yes,iptables-DROP,0.05,verifikasi AR firewall-drop-suricata - aturan DROP mendarat (INPUT)
+198.51.100.15,attacker(RFC5737),100102,10,yes,iptables-DROP,0.08,verifikasi AR firewall-drop-suricata - aturan DROP mendarat (INPUT)
+198.51.100.16,attacker(RFC5737),100102,10,yes,iptables-DROP,0.06,verifikasi AR firewall-drop-suricata - aturan DROP mendarat (INPUT)
+198.51.100.17,attacker(RFC5737),100102,10,yes,iptables-DROP,0.05,verifikasi AR firewall-drop-suricata - aturan DROP mendarat (INPUT)
+198.51.100.18,attacker(RFC5737),100102,10,yes,iptables-DROP,0.04,verifikasi AR firewall-drop-suricata - aturan DROP mendarat (INPUT)
+198.51.100.19,attacker(RFC5737),100102,10,yes,iptables-DROP,0.05,verifikasi AR firewall-drop-suricata - aturan DROP mendarat (INPUT)
+198.51.100.20,attacker(RFC5737),100102,10,yes,iptables-DROP,0.04,verifikasi AR firewall-drop-suricata - aturan DROP mendarat (INPUT)
+198.18.0.31,attacker(RFC2544),100102,10,yes,iptables-DROP,0.04,verifikasi AR firewall-drop-suricata - aturan DROP mendarat (INPUT)
+198.18.0.32,attacker(RFC2544),100102,10,yes,iptables-DROP,0.07,verifikasi AR firewall-drop-suricata - aturan DROP mendarat (INPUT)

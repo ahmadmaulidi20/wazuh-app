@@ -1,0 +1,22 @@
+﻿No|Aktivitas|IP Attacker|IP Pengguna|Status Block|Status Akses Pengguna
+1|SSH Brute Force (firewall-drop)|45.118.144.36|116.206.32.57|Berhasil (27-08 05:28-05:38)|Normal
+2|SSH Brute Force (firewall-drop)|198.51.200.21|116.206.32.57|Berhasil (04-09 19:24-19:34)|Normal
+3|SSH Brute Force (firewall-drop)|180.247.238.165|116.206.32.57|Berhasil (04-09 19:29-19:39)|Normal
+4|SSH Brute Force (firewall-drop)|198.51.100.80|116.206.32.57|Berhasil (04-09 19:33-19:43)|Normal
+5|SSH Brute Force (firewall-drop)|198.51.100.90|116.206.32.57|Berhasil (04-09 19:39-19:49)|Normal
+6|SSH Brute Force (firewall-drop)|103.194.7.11|116.206.32.57|Berhasil (04-09 19:43-19:53)|Normal
+7|Port Scanning (firewall-drop-suricata)|190.22.179.253|116.206.32.57|Berhasil (04-09 22:14-22:24)|Normal
+8|Port Scanning (firewall-drop-suricata)|198.51.100.41|116.206.32.57|Berhasil (04-09 22:21-22:31)|Normal
+9|Port Scanning (firewall-drop-suricata)|198.51.100.42|116.206.32.57|Berhasil (04-09 22:21-22:31)|Normal
+10|Port Scanning (firewall-drop-suricata)|198.51.100.11|116.206.32.57|Berhasil (04-09 23:10-23:20)|Normal
+11|Port Scanning (firewall-drop-suricata)|198.51.100.12|116.206.32.57|Berhasil (04-09 23:10-23:20)|Normal
+12|Port Scanning (firewall-drop-suricata)|198.51.100.13|116.206.32.57|Berhasil (04-09 23:10-23:20)|Normal
+13|Port Scanning (firewall-drop-suricata)|198.51.100.14|116.206.32.57|Berhasil (04-09 23:10-23:20)|Normal
+14|Port Scanning (firewall-drop-suricata)|198.51.100.15|116.206.32.57|Berhasil (04-09 23:10-23:20)|Normal
+15|Port Scanning (firewall-drop-suricata)|198.51.100.16|116.206.32.57|Berhasil (04-09 23:11-23:21)|Normal
+16|Port Scanning (firewall-drop-suricata)|198.51.100.17|116.206.32.57|Berhasil (04-09 23:11-23:21)|Normal
+17|Port Scanning (firewall-drop-suricata)|198.51.100.18|116.206.32.57|Berhasil (04-09 23:11-23:21)|Normal
+18|Port Scanning (firewall-drop-suricata)|198.51.100.19|116.206.32.57|Berhasil (04-09 23:11-23:21)|Normal
+19|Port Scanning (firewall-drop-suricata)|198.51.100.20|116.206.32.57|Berhasil (04-09 23:11-23:21)|Normal
+20|Port Scanning (firewall-drop-suricata)|198.18.0.31|116.206.32.57|Berhasil (04-09 23:11-23:21)|Normal
+21|Port Scanning (firewall-drop-suricata)|198.18.0.32|116.206.32.57|Berhasil (04-09 23:11-23:21)|Normal

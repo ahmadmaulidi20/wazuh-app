@@ -80,73 +80,98 @@
 
 </group>
 
-<!-- Whitelist administrator 116.206.33.54: semua alert dari IP ini diabaikan (bukan serangan) -->
-<group name="whitelist_admin,local,syslog,sshd,suricata,pam">
+<!-- Whitelist administrator 116.206.32.57: semua alert dari IP ini diabaikan -->
+<group name="whitelist_admin_32_57,local,syslog,sshd,suricata,pam">
 
-  <rule id="100210" level="0">
+  <!-- SSH: override rule 5710 -->
+  <rule id="100310" level="0">
     <if_sid>5710</if_sid>
-    <srcip>116.206.33.54</srcip>
-    <description>SSH: Kegagalan login dari IP administrator (whitelist) - diabaikan.</description>
+    <srcip>116.206.32.57</srcip>
+    <description>SSH: Kegagalan login dari IP admin (whitelist) - diabaikan.</description>
   </rule>
 
-  <rule id="100211" level="0">
+  <!-- SSH: override brute force 5712 -->
+  <rule id="100311" level="0">
     <if_matched_sid>5712</if_matched_sid>
-    <srcip>116.206.33.54</srcip>
-    <description>SSH: Brute force dari IP administrator (whitelist) - diabaikan.</description>
+    <srcip>116.206.32.57</srcip>
+    <description>SSH: Brute force dari IP admin (whitelist) - diabaikan.</description>
   </rule>
 
-  <rule id="100212" level="0">
+  <!-- SSH: override rule 5716 -->
+  <rule id="100312" level="0">
     <if_sid>5716</if_sid>
-    <srcip>116.206.33.54</srcip>
-    <description>SSH: Kegagalan autentikasi dari IP administrator (whitelist) - diabaikan.</description>
+    <srcip>116.206.32.57</srcip>
+    <description>SSH: Kegagalan autentikasi dari IP admin (whitelist) - diabaikan.</description>
   </rule>
 
-  <rule id="100213" level="0">
+  <!-- SSH: override brute force 5720 -->
+  <rule id="100313" level="0">
     <if_matched_sid>5720</if_matched_sid>
-    <srcip>116.206.33.54</srcip>
-    <description>SSH: Multiple kegagalan autentikasi dari IP administrator (whitelist) - diabaikan.</description>
+    <srcip>116.206.32.57</srcip>
+    <description>SSH: Multiple kegagalan autentikasi dari IP admin (whitelist) - diabaikan.</description>
   </rule>
 
-  <rule id="100214" level="0">
+  <!-- SSH: override rule 5760 -->
+  <rule id="100314" level="0">
     <if_sid>5760</if_sid>
-    <srcip>116.206.33.54</srcip>
-    <description>SSH: Authentication failed dari IP administrator (whitelist) - diabaikan.</description>
+    <srcip>116.206.32.57</srcip>
+    <description>SSH: Authentication failed dari IP admin (whitelist) - diabaikan.</description>
   </rule>
 
-  <rule id="100215" level="0">
+  <!-- SSH: override brute force 5763 -->
+  <rule id="100315" level="0">
     <if_matched_sid>5763</if_matched_sid>
-    <srcip>116.206.33.54</srcip>
-    <description>SSH: Brute force valid-user dari IP administrator (whitelist) - diabaikan.</description>
+    <srcip>116.206.32.57</srcip>
+    <description>SSH: Brute force valid-user dari IP admin (whitelist) - diabaikan.</description>
   </rule>
 
-  <rule id="100216" level="0">
+  <!-- PAM: override rule 5503 -->
+  <rule id="100316" level="0">
     <if_sid>5503</if_sid>
-    <srcip>116.206.33.54</srcip>
-    <description>PAM: Authentication failure dari IP administrator (whitelist) - diabaikan.</description>
+    <srcip>116.206.32.57</srcip>
+    <description>PAM: Authentication failure dari IP admin (whitelist) - diabaikan.</description>
   </rule>
 
-  <rule id="100217" level="0">
+  <!-- PAM: override brute force 5551 -->
+  <rule id="100317" level="0">
     <if_matched_sid>5551</if_matched_sid>
-    <srcip>116.206.33.54</srcip>
-    <description>PAM: Brute force dari IP administrator (whitelist) - diabaikan.</description>
+    <srcip>116.206.32.57</srcip>
+    <description>PAM: Brute force dari IP admin (whitelist) - diabaikan.</description>
   </rule>
 
-  <rule id="100218" level="0">
+  <!-- Suricata: override Nmap scan 100102 -->
+  <rule id="100318" level="0">
     <if_sid>100102</if_sid>
-    <field name="src_ip">^116\.206\.33\.54$</field>
-    <description>Suricata: Nmap TCP SYN scan dari IP administrator (whitelist) - diabaikan.</description>
+    <field name="src_ip">^116\.206\.32\.57$</field>
+    <description>Suricata: Nmap TCP SYN scan dari IP admin (whitelist) - diabaikan.</description>
   </rule>
 
-  <rule id="100219" level="0">
+  <!-- Suricata: override portscan 100103 -->
+  <rule id="100319" level="0">
     <if_sid>100103</if_sid>
-    <field name="src_ip">^116\.206\.33\.54$</field>
-    <description>Suricata: Portscan dari IP administrator (whitelist) - diabaikan.</description>
+    <field name="src_ip">^116\.206\.32\.57$</field>
+    <description>Suricata: Portscan dari IP admin (whitelist) - diabaikan.</description>
   </rule>
 
-  <rule id="100220" level="0">
+  <!-- Suricata: override generic alert 86601 -->
+  <rule id="100320" level="0">
     <if_sid>86601</if_sid>
-    <field name="src_ip">^116\.206\.33\.54$</field>
-    <description>Suricata: Alert lain dari IP administrator (whitelist) - diabaikan.</description>
+    <field name="src_ip">^116\.206\.32\.57$</field>
+    <description>Suricata: Alert lain dari IP admin (whitelist) - diabaikan.</description>
+  </rule>
+
+  <!-- Suricata: catch-all eve.json alerts from this IP -->
+  <rule id="100321" level="0">
+    <if_sid>86600</if_sid>
+    <field name="src_ip">^116\.206\.32\.57$</field>
+    <description>Suricata: Semua alert dari IP admin (whitelist) - diabaikan.</description>
+  </rule>
+
+  <!-- Agent disconnected dari IP ini juga diabaikan -->
+  <rule id="100322" level="0">
+    <if_sid>504</if_sid>
+    <srcip>116.206.32.57</srcip>
+    <description>Agent disconnected dari IP admin (whitelist) - diabaikan.</description>
   </rule>
 
 </group>

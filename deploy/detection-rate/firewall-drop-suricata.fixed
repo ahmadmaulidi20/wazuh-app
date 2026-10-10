@@ -1,0 +1,48 @@
+#!/bin/bash
+# Custom active response firewall-drop-suricata
+# Blocks source IP from Suricata JSON alerts (src_ip) and standard alerts (srcip)
+# NOTE: one-shot version - processes a single message and exits immediately
+# so it never blocks wazuh-execd (previous version hung on 'while read' loop).
+# Fallback stdin read is guarded with a timeout so it can never hang.
+# Fixed: handles Wazuh timeout-suffixed command (firewall-drop-suricataN).
+
+# Never block these trusted IPs
+WHITELIST="103.30.194.158"
+
+input="$1"
+if [ -z "$input" ]; then
+  read -t 5 -r input || exit 0
+fi
+
+srcip=$(printf '%s' "$input" | grep -o '"src_ip":"[^"]*"' | head -n1 | cut -d'"' -f4)
+[ -z "$srcip" ] && srcip=$(printf '%s' "$input" | grep -o '"srcip":"[^"]*"' | head -n1 | cut -d'"' -f4)
+
+# Determine action robustly: prefer explicit add/delete, else infer from
+# command name (supports firewall-drop-suricata or firewall-drop-suricataN).
+if printf '%s' "$input" | grep -q '"command":"add"'; then
+  cmd="add"
+elif printf '%s' "$input" | grep -q '"command":"delete"'; then
+  cmd="delete"
+elif printf '%s' "$input" | grep -qE '"command":"firewall-drop-suricata[0-9]*"'; then
+  cmd="add"
+else
+  cmd=$(printf '%s' "$input" | grep -o '"command":"[^"]*"' | head -n1 | cut -d'"' -f4)
+fi
+
+if [ -n "$srcip" ]; then
+  if echo "$WHITELIST" | grep -qw "$srcip"; then
+    echo "$(date '+%Y/%m/%d %H:%M:%S') firewall-drop-suricata: Skipping trusted IP $srcip" >> /var/ossec/logs/active-responses.log
+  else
+    case "$cmd" in
+      add)
+        /sbin/iptables -I INPUT -s "$srcip" -j DROP
+        echo "$(date '+%Y/%m/%d %H:%M:%S') firewall-drop-suricata: Blocking $srcip" >> /var/ossec/logs/active-responses.log
+        ;;
+      delete)
+        /sbin/iptables -D INPUT -s "$srcip" -j DROP
+        echo "$(date '+%Y/%m/%d %H:%M:%S') firewall-drop-suricata: Unblocking $srcip" >> /var/ossec/logs/active-responses.log
+        ;;
+    esac
+  fi
+fi
+exit 0
