@@ -12,3 +12,6 @@ dist/
 
 # Hasil backup config VPS & dump database (PRIVATE - tidak boleh di-commit)
 backups/
+
+# Agent markdown (lokal saja, tidak di-upload)
+agent.md
