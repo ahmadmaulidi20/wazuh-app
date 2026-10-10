@@ -15,3 +15,6 @@ backups/
 
 # Agent markdown (lokal saja, tidak di-upload)
 agent.md
+
+# Data eksperimen detection-rate (lokal saja, tidak di-upload)
+deploy/detection-rate/

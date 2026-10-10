@@ -1,6 +1,0 @@
-source_ip,ip_class,alert_rule,alert_level,blocked,block_mechanism,response_time_sec,notes
-198.51.200.20,attacker(RFC5737),5763,10,yes,iptables-DROP,,uji awal pada log agent (manager local tdk terlibat)
-198.51.200.21,attacker(RFC5737),5763,10,yes,iptables-DROP,1.90,manager local agent 000
-180.247.238.165,attacker(public),5763,10,yes,iptables-DROP,,manager local agent 000
-198.51.100.80,attacker(RFC5737),5763,10,yes,iptables-DROP,1.90,response time terukur presisi (poll 0.2s)
-116.206.32.57,user-whitelist,-degraded-0-,0,no,-,-,tidak memicu alert & tidak diblokir

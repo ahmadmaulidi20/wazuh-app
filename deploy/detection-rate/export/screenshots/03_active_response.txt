@@ -1,6 +1,0 @@
-=== [4.3] ACTIVE RESPONSE - iptables DROP rules ===
-Chain INPUT (policy DROP)
-
-=== AR log (firewall-drop trigger) ===
-
-2026/09/04 19:53:22 active-response/bin/firewall-drop: Ended

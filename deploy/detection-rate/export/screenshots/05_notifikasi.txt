@@ -1,8 +1,0 @@
-=== [4.4] NOTIFIKASI - webhook & FCM (backend log) ===
-2026-09-04T12:43:26.559Z [[32minfo[39m]: Cleaned 7 invalid FCM tokens
-2026-09-04T12:43:26.559Z [[32minfo[39m]: FCM sent: 4 success, 7 failed
-2026-09-04T12:43:26.560Z [[32minfo[39m]: Alert processed: sshd: Serangan brute force SSH - banyak kegagalan autentikasi. (level 10)
-172.19.0.1 - - [04/Sep/2026:12:43:26 +0000] "POST /api/webhook/wazuh HTTP/1.1" 200 73 "-" "python-requests/2.31.0"
-2026-09-04T12:49:03.575Z [[32minfo[39m]: FCM sent: 4 success, 0 failed
-2026-09-04T12:49:03.575Z [[32minfo[39m]: Alert processed: Suricata: Deteksi port scanning Nmap TCP SYN. (level 10)
-172.19.0.1 - - [04/Sep/2026:12:49:03 +0000] "POST /api/webhook/wazuh HTTP/1.1" 200 73 "-" "python-requests/2.31.0"
